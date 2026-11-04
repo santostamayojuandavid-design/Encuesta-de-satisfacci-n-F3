@@ -1,9 +1,10 @@
 export const GOOGLE_APPS_SCRIPT_CODE = `/**
  * Código de Google Apps Script para recibir respuestas de la encuesta
- * y guardarlas automáticamente en la pestaña "Encuesta IA".
+ * y guardarlas automáticamente en la pestaña "Encuesta F3".
+ * Hoja vinculada: ID "1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo"
  * 
  * INSTRUCCIONES DE INSTALACIÓN:
- * 1. Abre tu Hoja de Cálculo en Google Sheets.
+ * 1. Abre tu Hoja de Cálculo en Google Sheets (ID: 1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo).
  * 2. En el menú superior haz clic en: Extensiones > Apps Script.
  * 3. Borra todo el código que aparezca y pega este código completo.
  * 4. Haz clic en "Implementar" (botón azul superior derecho) > "Nueva implementación".
@@ -22,10 +23,10 @@ function doPost(e) {
 
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheetName = "Encuesta IA";
+    var sheetName = "Encuesta F3";
     var sheet = ss.getSheetByName(sheetName);
 
-    // Si la pestaña "Encuesta IA" no existe, se crea automáticamente
+    // Si la pestaña "Encuesta F3" no existe, se crea automáticamente
     if (!sheet) {
       sheet = ss.insertSheet(sheetName);
     }
@@ -97,7 +98,7 @@ function doPost(e) {
     ]);
 
     return ContentService
-      .createTextOutput(JSON.stringify({ "status": "success", "message": "Respuesta registrada en 'Encuesta IA'" }))
+      .createTextOutput(JSON.stringify({ "status": "success", "message": "Respuesta registrada en 'Encuesta F3'" }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -111,7 +112,7 @@ function doPost(e) {
 
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({ "status": "ok", "message": "Servicio de recepción de Encuesta IA activo" }))
+    .createTextOutput(JSON.stringify({ "status": "ok", "message": "Servicio de recepción de Encuesta F3 activo" }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 `;
@@ -496,7 +497,7 @@ export function generateStandaloneHtml(webhookUrl = ''): string {
       </div>
       <h1 class="header-title">Encuesta de Satisfacción - Ambiente de Cómputo F3</h1>
       <p class="header-subtitle">
-        Tu opinión es fundamental para el mejoramiento continuo de nuestros ambientes de aprendizaje. Esta encuesta consta de 10 preguntas breves y las respuestas se guardan en tiempo real en la hoja <strong>"Encuesta IA"</strong>.
+        Tu opinión es fundamental para el mejoramiento continuo de nuestros ambientes de aprendizaje. Esta encuesta consta de 10 preguntas breves y las respuestas se guardan en tiempo real en la hoja <strong>"Encuesta F3"</strong> (ID: <code>1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo</code>).
       </p>
       <div class="meta-tags">
         <div class="meta-tag">
@@ -509,7 +510,7 @@ export function generateStandaloneHtml(webhookUrl = ''): string {
         </div>
         <div class="meta-tag">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Hoja destino: Encuesta IA
+          Hoja destino: Encuesta F3
         </div>
       </div>
     </header>
@@ -862,7 +863,7 @@ export function generateStandaloneHtml(webhookUrl = ''): string {
       <!-- MENSAJES DE ESTADO -->
       <div id="alertSuccess" class="alert-box alert-success">
         <h3 style="font-weight: 700; font-size: 17px; margin-bottom: 6px;">¡Encuesta enviada exitosamente!</h3>
-        <p>Tu opinión ha sido registrada en la hoja de cálculo <strong>"Encuesta IA"</strong>. Muchas gracias por contribuir al mejoramiento del ambiente F3.</p>
+        <p>Tu opinión ha sido registrada en la hoja de cálculo <strong>"Encuesta F3"</strong>. Muchas gracias por contribuir al mejoramiento del ambiente F3.</p>
         <button type="button" onclick="resetForm()" style="margin-top: 14px; background: #15803d; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;">Llenar otra respuesta</button>
       </div>
 
@@ -910,7 +911,7 @@ export function generateStandaloneHtml(webhookUrl = ''): string {
       }
 
       const payload = {
-        sheetName: "Encuesta IA",
+        sheetName: "Encuesta F3",
         q1: formData.get('q1_relationship'),
         q2: formData.get('q2_frequency'),
         q3: formData.get('q3_facilities'),
@@ -934,7 +935,7 @@ export function generateStandaloneHtml(webhookUrl = ''): string {
       // Animación de envío
       submitBtn.disabled = true;
       btnSpinner.style.display = 'inline-block';
-      btnText.textContent = 'Enviando a Encuesta IA...';
+      btnText.textContent = 'Enviando a Encuesta F3...';
       alertSuccess.style.display = 'none';
       alertError.style.display = 'none';
 

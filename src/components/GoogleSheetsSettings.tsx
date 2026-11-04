@@ -17,6 +17,8 @@ import {
   verifyAndPrepareSpreadsheet,
   SpreadsheetVerification,
   SURVEY_HEADERS,
+  DEFAULT_SPREADSHEET_ID,
+  DEFAULT_SHEET_NAME,
 } from '../services/sheetsService.ts';
 
 interface GoogleSheetsSettingsProps {
@@ -75,12 +77,12 @@ export function GoogleSheetsSettings({
 
     setVerifying(true);
     try {
-      const res = await verifyAndPrepareSpreadsheet(extracted, token, 'Encuesta IA');
+      const res = await verifyAndPrepareSpreadsheet(extracted, token, DEFAULT_SHEET_NAME);
       setSpreadsheetId(extracted);
       setVerifyResult(res);
       setSheetVerified(true);
       setSuccessMessage(
-        `¡Conexión exitosa! La pestaña "Encuesta IA" está verificada con sus 11 columnas de encabezados oficiales.`
+        `¡Conexión exitosa! La pestaña "${DEFAULT_SHEET_NAME}" está verificada con sus 11 columnas de encabezados oficiales.`
       );
     } catch (err: unknown) {
       console.error(err);
@@ -105,10 +107,10 @@ export function GoogleSheetsSettings({
           </div>
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Conexión con Google Sheets
+              Conexión con Google Sheets por Defecto
             </h2>
             <p className="text-sm text-slate-600">
-              Configura el destino de las respuestas en la pestaña llamada <strong>"Encuesta IA"</strong>.
+              Hoja predeterminada vinculada: <code className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono font-bold text-slate-800">{DEFAULT_SPREADSHEET_ID}</code> &bull; Pestaña: <strong className="text-emerald-700">"{DEFAULT_SHEET_NAME}"</strong>
             </p>
           </div>
         </div>
@@ -217,25 +219,39 @@ export function GoogleSheetsSettings({
               2
             </span>
             <h3 className="text-base sm:text-lg font-bold text-slate-900">
-              Hoja de Cálculo y Pestaña "Encuesta IA"
+              Hoja de Cálculo y Pestaña "{DEFAULT_SHEET_NAME}"
             </h3>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 pl-8">
-            Pega el enlace o el ID de tu Google Sheet. La aplicación se encargará de comprobar o crear la pestaña llamada <strong>"Encuesta IA"</strong> y configurar los encabezados de las 10 preguntas.
+            Esta aplicación está preconfigurada con tu hoja de cálculo oficial. La información se registrará por defecto en la pestaña <strong>"{DEFAULT_SHEET_NAME}"</strong>.
           </p>
         </div>
 
         <div className="pl-8 space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              URL o ID de Google Spreadsheet:
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                ID o URL de la Hoja de Google Sheets:
+              </label>
+              {spreadsheetInput !== DEFAULT_SPREADSHEET_ID && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSpreadsheetInput(DEFAULT_SPREADSHEET_ID);
+                    setSpreadsheetId(DEFAULT_SPREADSHEET_ID);
+                  }}
+                  className="text-[11px] text-[#2e8300] hover:underline font-semibold"
+                >
+                  Restablecer a ID por defecto
+                </button>
+              )}
+            </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={spreadsheetInput}
                 onChange={(e) => setSpreadsheetInput(e.target.value)}
-                placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs.../edit"
+                placeholder={DEFAULT_SPREADSHEET_ID}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-mono"
               />
               <button
@@ -257,9 +273,20 @@ export function GoogleSheetsSettings({
                 )}
               </button>
             </div>
-            <p className="text-[12px] text-slate-500 mt-1.5">
-              Ejemplo: Puedes crear una hoja en blanco en Google Drive y pegar aquí su dirección web completa.
-            </p>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[12px] text-slate-500 mt-1.5">
+              <span>
+                ID por defecto: <code className="text-[#2e8300] font-bold">{DEFAULT_SPREADSHEET_ID}</code>
+              </span>
+              <a
+                href={`https://docs.google.com/spreadsheets/d/${spreadsheetId || DEFAULT_SPREADSHEET_ID}/edit`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 font-semibold"
+              >
+                <span>Abrir en Google Sheets</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
 
           {/* Feedback messages */}
@@ -309,7 +336,7 @@ export function GoogleSheetsSettings({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600">
                 <div className="flex items-center gap-1.5">
                   <TableProperties className="w-4 h-4 text-emerald-600" />
-                  <span>Pestaña de destino: <strong>"Encuesta IA"</strong></span>
+                  <span>Pestaña de destino: <strong>"{DEFAULT_SHEET_NAME}"</strong></span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
@@ -366,7 +393,7 @@ export function GoogleSheetsSettings({
       {/* Column Headers Reference */}
       <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-3">
         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-          Columnas oficiales de la hoja "Encuesta IA":
+          Columnas oficiales de la hoja "{DEFAULT_SHEET_NAME}":
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600 font-mono">
           {SURVEY_HEADERS.map((header, idx) => (

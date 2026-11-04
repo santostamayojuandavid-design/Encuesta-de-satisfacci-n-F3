@@ -12,6 +12,10 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { SurveyResponse } from '../types/survey.ts';
+import {
+  DEFAULT_SPREADSHEET_ID,
+  DEFAULT_SHEET_NAME,
+} from '../services/sheetsService.ts';
 
 interface AnalyticsViewProps {
   responses: SurveyResponse[];
@@ -93,11 +97,13 @@ export function AnalyticsView({ responses, spreadsheetId }: AnalyticsViewProps) 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Encuesta_IA_Sala_F3_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `Encuesta_F3_Sala_Buga_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+
+  const activeSheetId = spreadsheetId || DEFAULT_SPREADSHEET_ID;
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-6 animate-in fade-in duration-200">
@@ -109,7 +115,7 @@ export function AnalyticsView({ responses, spreadsheetId }: AnalyticsViewProps) 
             <span className="text-[11px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-[#39A900]/15 text-[#2e8300]">
               Métricas en Tiempo Real
             </span>
-            <span className="text-xs text-slate-500">Hoja "Encuesta IA"</span>
+            <span className="text-xs text-slate-500">Hoja "{DEFAULT_SHEET_NAME}"</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
             Respuestas y Análisis del Ambiente F3
@@ -120,9 +126,9 @@ export function AnalyticsView({ responses, spreadsheetId }: AnalyticsViewProps) 
         </div>
 
         <div className="flex items-center gap-2">
-          {spreadsheetId && (
+          {activeSheetId && (
             <a
-              href={`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`}
+              href={`https://docs.google.com/spreadsheets/d/${activeSheetId}/edit`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-xl border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -285,7 +291,7 @@ export function AnalyticsView({ responses, spreadsheetId }: AnalyticsViewProps) 
           <h3 className="text-sm font-bold text-slate-900">
             Registro Histórico de Respuestas ({total})
           </h3>
-          <span className="text-xs text-slate-600">Pestaña "Encuesta IA"</span>
+          <span className="text-xs text-slate-600">Pestaña "{DEFAULT_SHEET_NAME}"</span>
         </div>
 
         {total === 0 ? (
@@ -330,7 +336,7 @@ export function AnalyticsView({ responses, spreadsheetId }: AnalyticsViewProps) 
                     <td className="py-2.5 px-3">
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                         <CheckCircle className="w-3 h-3 text-emerald-600" />
-                        Encuesta IA
+                        {DEFAULT_SHEET_NAME}
                       </span>
                     </td>
                   </tr>

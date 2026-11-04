@@ -71,10 +71,10 @@ export function Header({
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
               <span>
                 {sheetVerified
-                  ? 'Google Sheets Conectado ("Encuesta IA")'
+                  ? 'Hoja Vinculada: "Encuesta F3"'
                   : user
                   ? 'Configurar Hoja destino'
-                  : 'Conectar con Google Sheets'}
+                  : 'Hoja por defecto: "Encuesta F3"'}
               </span>
               {sheetVerified ? (
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />

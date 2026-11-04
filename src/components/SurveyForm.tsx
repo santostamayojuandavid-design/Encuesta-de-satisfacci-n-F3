@@ -288,7 +288,7 @@ export function SurveyForm({
               ¡Muchas Gracias por tu Respuesta!
             </h2>
             <p className="text-sm sm:text-base text-slate-600 max-h-40 max-w-lg mx-auto">
-              Tu valoración sobre el ambiente de cómputo F3 del Centro Agropecuario de Buga ha sido registrada en la hoja de cálculo <strong>"Encuesta IA"</strong>.
+              Tu valoración sobre el ambiente de cómputo F3 del Centro Agropecuario de Buga ha sido registrada en la hoja de cálculo <strong>"Encuesta F3"</strong>.
             </p>
           </div>
 
@@ -296,7 +296,7 @@ export function SurveyForm({
           <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 inline-flex flex-col items-center gap-1.5 text-xs text-emerald-900 font-medium">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              <span>Destino: Hoja "Encuesta IA"</span>
+              <span>Destino: Hoja "Encuesta F3"</span>
             </div>
             {spreadsheetId && (
               <a
@@ -345,7 +345,7 @@ export function SurveyForm({
             Encuesta de Satisfacción — Ambiente F3
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-            Tu opinión permite identificar fortalezas y necesidades de mejora en los equipos, conectividad, orden y condiciones de la sala de cómputo F3. Las respuestas se registran de manera organizada en la hoja <strong>"Encuesta IA"</strong>.
+            Tu opinión permite identificar fortalezas y necesidades de mejora en los equipos, conectividad, orden y condiciones de la sala de cómputo F3. Las respuestas se registran por defecto en la hoja <strong>"Encuesta F3"</strong>.
           </p>
         </div>
 
@@ -367,7 +367,7 @@ export function SurveyForm({
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
           <div className="flex items-center gap-2 text-slate-300">
             <Computer className="w-3.5 h-3.5 text-[#39A900]" />
-            <span>Destino: Hoja <strong>"Encuesta IA"</strong></span>
+            <span>Destino: Hoja <strong>"Encuesta F3"</strong></span>
           </div>
           {!sheetVerified && !hasWebhook && (
             <button
@@ -626,7 +626,7 @@ export function SurveyForm({
         onConfirm={handleConfirmSubmission}
         isLoading={isSubmitting}
         spreadsheetId={spreadsheetId}
-        sheetName="Encuesta IA"
+        sheetName="Encuesta F3"
         response={{
           q1_relationship: q1,
           q2_frequency: q2,

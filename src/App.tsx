@@ -8,7 +8,8 @@ import {
 import {
   appendToGoogleSheet,
   sendViaAppsScriptWebhook,
-  extractSpreadsheetId,
+  DEFAULT_SPREADSHEET_ID,
+  DEFAULT_SHEET_NAME,
 } from './services/sheetsService.ts';
 import { SurveyResponse } from './types/survey.ts';
 import { Header } from './components/Header.tsx';
@@ -61,15 +62,15 @@ export default function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Configuration state
+  // Configuration state with fixed default ID and sheet name
   const [spreadsheetInput, setSpreadsheetInput] = useState<string>(() => {
-    return localStorage.getItem('cab_f3_spreadsheet_input') || '';
+    return localStorage.getItem('cab_f3_spreadsheet_input') || DEFAULT_SPREADSHEET_ID;
   });
   const [spreadsheetId, setSpreadsheetId] = useState<string>(() => {
-    return localStorage.getItem('cab_f3_spreadsheet_id') || '';
+    return localStorage.getItem('cab_f3_spreadsheet_id') || DEFAULT_SPREADSHEET_ID;
   });
   const [sheetVerified, setSheetVerified] = useState<boolean>(() => {
-    return localStorage.getItem('cab_f3_sheet_verified') === 'true';
+    return true; // Default sheet is verified by definition
   });
   const [webhookUrl, setWebhookUrl] = useState<string>(() => {
     return localStorage.getItem('cab_f3_webhook_url') || '';
@@ -186,9 +187,10 @@ export default function App() {
     let syncErrorMsg = '';
 
     // Attempt 1: Direct Google Sheets API via OAuth token
-    if (spreadsheetId && token) {
+    const targetId = spreadsheetId || DEFAULT_SPREADSHEET_ID;
+    if (token) {
       try {
-        await appendToGoogleSheet(spreadsheetId, token, newResponse, 'Encuesta IA');
+        await appendToGoogleSheet(targetId, token, newResponse, DEFAULT_SHEET_NAME);
         sheetsSuccess = true;
       } catch (err: unknown) {
         console.error('Error al guardar en Google Sheets:', err);
@@ -199,7 +201,7 @@ export default function App() {
     // Attempt 2: If Webhook configured, send via Webhook
     if (webhookUrl) {
       try {
-        await sendViaAppsScriptWebhook(webhookUrl, newResponse);
+        await sendViaAppsScriptWebhook(webhookUrl, newResponse, DEFAULT_SHEET_NAME);
         sheetsSuccess = true;
       } catch (whErr) {
         console.warn('Webhook error:', whErr);
@@ -215,19 +217,19 @@ export default function App() {
     if (sheetsSuccess) {
       setNotification({
         type: 'success',
-        message: '¡Respuesta registrada exitosamente en la pestaña "Encuesta IA" de Google Sheets!',
+        message: `¡Respuesta registrada exitosamente en la pestaña "${DEFAULT_SHEET_NAME}" de Google Sheets!`,
       });
       return true;
-    } else if (spreadsheetId && !token) {
+    } else if (!token && !webhookUrl) {
       setNotification({
         type: 'info',
-        message: 'Respuesta guardada localmente. Inicia sesión en la pestaña "Conexión Google Sheets" para sincronizar directamente.',
+        message: `Respuesta guardada localmente para la hoja "${DEFAULT_SHEET_NAME}" (ID: ${DEFAULT_SPREADSHEET_ID}). Inicia sesión con Google en "Conexión Google Sheets" o usa el Webhook para sincronizar en la nube.`,
       });
       return true;
     } else if (syncErrorMsg) {
       setNotification({
         type: 'error',
-        message: `Guardado localmente. Error al enviar a Google Sheets: ${syncErrorMsg}. Verifica que tu cuenta tenga acceso de edición a la hoja.`,
+        message: `Guardado localmente. Error al enviar a Google Sheets: ${syncErrorMsg}. Verifica que tu cuenta (${user?.email || 'Google'}) tenga acceso de edición a la hoja.`,
       });
       return true;
     } else {
@@ -328,8 +330,8 @@ export default function App() {
           <span>SENA &bull; Centro Agropecuario de Buga</span>
           <span>&bull; Ambiente de Informática y Cómputo F3</span>
         </div>
-        <p className="text-slate-600">
-          Formulario de Satisfacción conectado a Google Sheets &bull; Hoja de destino: <strong>"Encuesta IA"</strong>
+        <p className="text-slate-500">
+          Formulario de Satisfacción conectado a Google Sheets &bull; Hoja de destino: <strong>"Encuesta F3"</strong> &bull; ID: <code className="text-emerald-400">1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo</code>
         </p>
       </footer>
     </div>

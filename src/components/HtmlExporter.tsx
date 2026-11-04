@@ -64,7 +64,7 @@ export function HtmlExporter({ webhookUrl }: HtmlExporterProps) {
                 Generador de Código HTML y Google Apps Script
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Obtén el archivo HTML independiente listo para alojar o enviar respuestas a la hoja <strong>"Encuesta IA"</strong>.
+                Obtén el archivo HTML independiente listo para alojar o enviar respuestas a la hoja <strong>"Encuesta F3"</strong> (ID: <code>1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo</code>).
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export function HtmlExporter({ webhookUrl }: HtmlExporterProps) {
             </h3>
             <ol className="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed">
               <li>
-                Abre tu hoja de Google Sheets en tu navegador.
+                Abre tu hoja de Google Sheets en tu navegador (ID: <code>1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo</code>).
               </li>
               <li>
                 En el menú superior haz clic en <strong>Extensiones &gt; Apps Script</strong>.
@@ -185,7 +185,7 @@ export function HtmlExporter({ webhookUrl }: HtmlExporterProps) {
                 Haz clic en <strong>Implementar</strong>, autoriza los permisos y copia la <strong>URL de la aplicación web</strong>.
               </li>
               <li>
-                Esa URL es la que recibe los datos y los escribe automáticamente en la pestaña <strong>"Encuesta IA"</strong>, creando los encabezados y filas al instante.
+                Esa URL es la que recibe los datos y los escribe automáticamente en la pestaña <strong>"Encuesta F3"</strong>, creando los encabezados y filas al instante desde cualquier equipo sin requerir inicio de sesión individual.
               </li>
             </ol>
           </div>

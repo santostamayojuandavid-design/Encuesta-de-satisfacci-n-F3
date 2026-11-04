@@ -1,5 +1,8 @@
 import { SurveyResponse } from '../types/survey.ts';
 
+export const DEFAULT_SPREADSHEET_ID = '1c6oQABMrZ0mqYwZ9_yjXm0KDXChpjMw4BloY6KVoudo';
+export const DEFAULT_SHEET_NAME = 'Encuesta F3';
+
 export const SURVEY_HEADERS = [
   'Marca temporal',
   '1. ¿Cuál es tu relación con el Centro Agropecuario de Buga?',
@@ -15,7 +18,7 @@ export const SURVEY_HEADERS = [
 ];
 
 export function extractSpreadsheetId(input: string): string {
-  if (!input) return '';
+  if (!input) return DEFAULT_SPREADSHEET_ID;
   const trimmed = input.trim();
   const match = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   if (match && match[1]) {
@@ -32,9 +35,9 @@ export interface SpreadsheetVerification {
 }
 
 export async function verifyAndPrepareSpreadsheet(
-  spreadsheetId: string,
+  spreadsheetId: string = DEFAULT_SPREADSHEET_ID,
   accessToken: string,
-  targetSheetName = 'Encuesta IA'
+  targetSheetName = DEFAULT_SHEET_NAME
 ): Promise<SpreadsheetVerification> {
   const metaRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
@@ -129,9 +132,9 @@ export async function verifyAndPrepareSpreadsheet(
 }
 
 export async function ensureHeaders(
-  spreadsheetId: string,
+  spreadsheetId: string = DEFAULT_SPREADSHEET_ID,
   accessToken: string,
-  targetSheetName = 'Encuesta IA'
+  targetSheetName = DEFAULT_SHEET_NAME
 ): Promise<void> {
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/'${encodeURIComponent(
@@ -183,10 +186,10 @@ export function formatResponseRow(response: SurveyResponse): (string | number)[]
 }
 
 export async function appendToGoogleSheet(
-  spreadsheetId: string,
+  spreadsheetId: string = DEFAULT_SPREADSHEET_ID,
   accessToken: string,
   response: SurveyResponse,
-  targetSheetName = 'Encuesta IA'
+  targetSheetName = DEFAULT_SHEET_NAME
 ): Promise<{ updatedRows: number; updatedRange: string }> {
   const rowValues = formatResponseRow(response);
 
@@ -221,12 +224,14 @@ export async function appendToGoogleSheet(
 
 export async function sendViaAppsScriptWebhook(
   webhookUrl: string,
-  response: SurveyResponse
+  response: SurveyResponse,
+  targetSheetName = DEFAULT_SHEET_NAME
 ): Promise<{ success: boolean; message: string }> {
   const row = formatResponseRow(response);
   const payload = {
     action: 'submitSurvey',
-    sheetName: 'Encuesta IA',
+    sheetName: targetSheetName,
+    spreadsheetId: DEFAULT_SPREADSHEET_ID,
     timestamp: response.timestamp,
     q1: response.q1_relationship,
     q2: response.q2_frequency,
