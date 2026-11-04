@@ -1,0 +1,6 @@
+{
+  "name": "Encuesta de Satisfacción - Sala F3 CAB",
+  "description": "Formulario de satisfacción sobre el uso del ambiente de cómputo F3 del Centro Agropecuario de Buga con registro de respuestas en Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
