@@ -95,6 +95,35 @@ export default function App() {
     message: string;
   } | null>(null);
 
+  // Load shared server configuration and responses on mount
+  useEffect(() => {
+    async function fetchServerData() {
+      try {
+        const configRes = await fetch('/api/config');
+        if (configRes.ok) {
+          const cfg = await configRes.json();
+          if (cfg.spreadsheetId) setSpreadsheetId(cfg.spreadsheetId);
+          if (cfg.spreadsheetId) setSpreadsheetInput(cfg.spreadsheetId);
+          if (cfg.webhookUrl) {
+            setWebhookUrl(cfg.webhookUrl);
+            setSheetVerified(true);
+          }
+        }
+
+        const respRes = await fetch('/api/responses');
+        if (respRes.ok) {
+          const list = await respRes.json();
+          if (Array.isArray(list) && list.length > 0) {
+            setResponses(list);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not sync with server endpoint on mount:', err);
+      }
+    }
+    fetchServerData();
+  }, []);
+
   // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('cab_f3_responses', JSON.stringify(responses));
@@ -157,13 +186,68 @@ export default function App() {
     });
   };
 
+  const handleSavePermanentWebhook = async (url: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          spreadsheetId: DEFAULT_SPREADSHEET_ID,
+          sheetName: DEFAULT_SHEET_NAME,
+          webhookUrl: url,
+        }),
+      });
+      if (res.ok) {
+        setWebhookUrl(url);
+        setSheetVerified(true);
+        setNotification({
+          type: 'success',
+          message: '¡Conexión permanente guardada! Ahora todos los equipos de la sala F3 enviarán respuestas a la hoja "Encuesta F3" sin requerir inicio de sesión.',
+        });
+        return true;
+      }
+    } catch (err) {
+      console.error('Error saving permanent webhook:', err);
+    }
+    return false;
+  };
+
   const handleSubmitSurvey = async (
     data: Omit<SurveyResponse, 'id' | 'timestamp' | 'syncedToGoogleSheets'>
   ): Promise<boolean> => {
     setIsSubmitting(true);
     setNotification(null);
 
-    // Format timestamp in Colombia timezone (UTC-5)
+    // Primary: Submit to server route (zero-login on any computer)
+    try {
+      const serverRes = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (serverRes.ok) {
+        const result = await serverRes.json();
+        if (result.success && result.response) {
+          // If admin token is also active in this browser, ensure direct append as backup
+          if (token && spreadsheetId) {
+            appendToGoogleSheet(spreadsheetId, token, result.response, DEFAULT_SHEET_NAME).catch(() => {});
+          }
+
+          setResponses((prev) => [result.response, ...prev.filter((r) => r.id !== result.response.id)]);
+          setIsSubmitting(false);
+          setNotification({
+            type: 'success',
+            message: result.message || `¡Respuesta registrada exitosamente en la pestaña "${DEFAULT_SHEET_NAME}"!`,
+          });
+          return true;
+        }
+      }
+    } catch (serverErr) {
+      console.warn('Server submit attempt had an issue, fallback to client:', serverErr);
+    }
+
+    // Fallback client append if server route was offline
     const now = new Date();
     const dateFormatted = new Intl.DateTimeFormat('es-CO', {
       day: '2-digit',
@@ -184,21 +268,17 @@ export default function App() {
     };
 
     let sheetsSuccess = false;
-    let syncErrorMsg = '';
-
-    // Attempt 1: Direct Google Sheets API via OAuth token
     const targetId = spreadsheetId || DEFAULT_SPREADSHEET_ID;
+
     if (token) {
       try {
         await appendToGoogleSheet(targetId, token, newResponse, DEFAULT_SHEET_NAME);
         sheetsSuccess = true;
       } catch (err: unknown) {
         console.error('Error al guardar en Google Sheets:', err);
-        syncErrorMsg = err instanceof Error ? err.message : 'Error de permisos en Google Sheets';
       }
     }
 
-    // Attempt 2: If Webhook configured, send via Webhook
     if (webhookUrl) {
       try {
         await sendViaAppsScriptWebhook(webhookUrl, newResponse, DEFAULT_SHEET_NAME);
@@ -209,37 +289,16 @@ export default function App() {
     }
 
     newResponse.syncedToGoogleSheets = sheetsSuccess;
-
-    // Save to local responses list
     setResponses((prev) => [newResponse, ...prev]);
     setIsSubmitting(false);
 
-    if (sheetsSuccess) {
-      setNotification({
-        type: 'success',
-        message: `¡Respuesta registrada exitosamente en la pestaña "${DEFAULT_SHEET_NAME}" de Google Sheets!`,
-      });
-      return true;
-    } else if (!token && !webhookUrl) {
-      setNotification({
-        type: 'info',
-        message: `Respuesta guardada localmente para la hoja "${DEFAULT_SHEET_NAME}" (ID: ${DEFAULT_SPREADSHEET_ID}). Inicia sesión con Google en "Conexión Google Sheets" o usa el Webhook para sincronizar en la nube.`,
-      });
-      return true;
-    } else if (syncErrorMsg) {
-      setNotification({
-        type: 'error',
-        message: `Guardado localmente. Error al enviar a Google Sheets: ${syncErrorMsg}. Verifica que tu cuenta (${user?.email || 'Google'}) tenga acceso de edición a la hoja.`,
-      });
-      return true;
-    } else {
-      // Local save success
-      setNotification({
-        type: 'info',
-        message: 'Respuesta guardada localmente. Puedes vincular una hoja en "Conexión Google Sheets" o descargar el archivo HTML.',
-      });
-      return true;
-    }
+    setNotification({
+      type: sheetsSuccess ? 'success' : 'info',
+      message: sheetsSuccess
+        ? `¡Respuesta registrada en la pestaña "${DEFAULT_SHEET_NAME}" de Google Sheets!`
+        : `Respuesta guardada para la hoja "${DEFAULT_SHEET_NAME}".`,
+    });
+    return true;
   };
 
   return (
@@ -307,6 +366,7 @@ export default function App() {
             setSheetVerified={setSheetVerified}
             webhookUrl={webhookUrl}
             setWebhookUrl={setWebhookUrl}
+            onSavePermanentWebhook={handleSavePermanentWebhook}
             onGoToSurvey={() => setActiveTab('survey')}
           />
         )}

@@ -366,16 +366,19 @@ export function SurveyForm({
         {/* Sync destination pill */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
           <div className="flex items-center gap-2 text-slate-300">
-            <Computer className="w-3.5 h-3.5 text-[#39A900]" />
-            <span>Destino: Hoja <strong>"Encuesta F3"</strong></span>
+            <span className={`w-2 h-2 rounded-full ${hasWebhook || sheetVerified ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <span>
+              {hasWebhook
+                ? 'Conexión Permanente Activa (Sin inicio de sesión) • Hoja: "Encuesta F3"'
+                : 'Destino: Hoja "Encuesta F3" (ID: 1c6oQAB...)'}
+            </span>
           </div>
-          {!sheetVerified && !hasWebhook && (
+          {!hasWebhook && (
             <button
               onClick={onOpenSettings}
-              className="text-amber-300 hover:text-amber-200 underline text-xs flex items-center gap-1"
+              className="text-emerald-300 hover:text-emerald-200 underline text-xs flex items-center gap-1 font-semibold"
             >
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <span>Vincular tu hoja de Google Sheets</span>
+              <span>Vincular enlace permanente para todos los equipos</span>
             </button>
           )}
         </div>

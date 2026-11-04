@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sample-1",
+    "timestamp": "27/10/2026 20:22:51",
+    "q1_relationship": "Instructor(a)",
+    "q2_frequency": "Varias veces a la semana",
+    "q3_facilities": 4,
+    "q4_cleanliness": 4,
+    "q5_equipment": 4,
+    "q6_comfort": 4,
+    "q7_availability": 4,
+    "q8_overall": 4,
+    "q9_aspectsToImprove": [
+      "Infraestructura e instalaciones",
+      "Equipos y recursos disponibles (PCs, monitores, teclados)",
+      "Disponibilidad y horarios de uso"
+    ],
+    "q10_suggestions": "Ampliar la disponibilidad en jornada nocturna.",
+    "syncedToGoogleSheets": true
+  },
+  {
+    "id": "sample-2",
+    "timestamp": "27/10/2026 21:04:19",
+    "q1_relationship": "Aprendiz",
+    "q2_frequency": "Diariamente",
+    "q3_facilities": 5,
+    "q4_cleanliness": 5,
+    "q5_equipment": 4,
+    "q6_comfort": 5,
+    "q7_availability": 5,
+    "q8_overall": 5,
+    "q9_aspectsToImprove": [
+      "Conectividad a Internet / Velocidad de red"
+    ],
+    "q10_suggestions": "Excelente ambiente de aprendizaje, mantener el aire acondicionado a temperatura constante.",
+    "syncedToGoogleSheets": true
+  }
+]
